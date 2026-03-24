@@ -6,3 +6,5 @@ export const MONGO_URI = process.env.MONGODB_STRING_URI;
 export const CLOUDE_NAME = process.env.CLOUDE_NAME;
 export const CLOUDE_API = process.env.CLOUDE_API;
 export const CLOUDE_API_SECRET = process.env.CLOUDE_API_SECRET;
+export const ACCESSTOKEN = process.env.ACCESS_TOKEN;
+export const REFRESHTOKEN = process.env.REFRESH_TOKEN;

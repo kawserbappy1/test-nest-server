@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { PORT } from "./secret.js";
 import connectionDB from "./configs/dbConnection.js";
 import cloudinaryConnection from "./configs/cloudinary.js";
+import userRoute from "./routers/userRoutes.js";
 const app = express();
 
 // middleware
@@ -19,6 +20,10 @@ app.use(cookieParser());
 
 await connectionDB();
 await cloudinaryConnection();
+
+// All routes
+//user route
+app.use("/api/v1/user", userRoute);
 
 app.get("/", (req, res) => {
   res.send("This server is running from testy nest server");
