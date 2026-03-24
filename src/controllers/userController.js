@@ -113,3 +113,26 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+//logout user
+export const logOut = async (req, res) => {
+  try {
+    const cookieOption = {
+      httpOnly: true,
+      sameSite: "strict",
+    };
+    res.clearCookie("accessToken", cookieOption);
+    res.clearCookie("refreshToken", cookieOption);
+
+    return res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout failed:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
