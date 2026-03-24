@@ -6,6 +6,8 @@ import {
   generateRefreshToken,
   sendAuthCookies,
 } from "../configs/token.js";
+
+// *********** for User *******************
 //registerUser
 export const registerUser = async (req, res) => {
   try {
@@ -133,6 +135,61 @@ export const logOut = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
+    });
+  }
+};
+
+//update user
+export const updateProfile = async (req, res) => {
+  try {
+    // 1. catch user id from the middleware function
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    const { name, password } = req.body;
+    // 2. Get user from DB
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    // 3. Update fields
+    if (name) user.name = name;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+    // 4. Image update
+    if (req.file) {
+      // Delete old image
+      if (user.image) {
+        const public_id = user.image.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(public_id);
+      }
+      // Upload new image
+      const result = await cloudinary.uploader.upload(req.file.path);
+      user.image = result.secure_url;
+    }
+    // 5. Save user
+    await user.save();
+    // 6. send response to the frontend
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Update Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
     });
   }
 };
