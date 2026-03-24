@@ -1,11 +1,14 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { PORT } from "./secret.js";
+import connectionDB from "./configs/dbConnection.js";
+import cloudinaryConnection from "./configs/cloudinary.js";
 const app = express();
 
 // middleware
 app.use(express.json());
-app.express.urlencoded({ extended: true });
+app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -14,6 +17,13 @@ app.use(
 );
 app.use(cookieParser());
 
+await connectionDB();
+await cloudinaryConnection();
+
 app.get("/", (req, res) => {
   res.send("This server is running from testy nest server");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
