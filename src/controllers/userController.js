@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
@@ -139,6 +140,39 @@ export const logOut = async (req, res) => {
   }
 };
 
+//userProfile
+export const userProfile = async (req, res) => {
+  try {
+    // 🔹 Logged-in user ID comes from protect middleware
+    const userId = req.user?.id;
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+    const user = await User.findById(userId).select(
+      "name email image isAdmin isActive createdAt",
+    );
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Logged-in user fetched successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("get user profile error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
 //update user
 export const updateProfile = async (req, res) => {
   try {
@@ -183,6 +217,65 @@ export const updateProfile = async (req, res) => {
       success: true,
       message: "User updated successfully",
       data: user,
+    });
+  } catch (error) {
+    console.error("Update Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+// *********** for Admin *******************
+
+//get all user with pagination and search functionality
+export const getAllUser = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || "";
+    const skip = (page - 1) * limit;
+    const query = {
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { isActive: { $regex: search, $options: "i" } },
+      ],
+    };
+    const total = await User.countDocuments(query);
+    const users = await User.find(query)
+      .select("-password")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      users,
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+// delete user
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteUser = await User.findByIdAndDelete(id);
+    res.status(201).json({
+      success: true,
+      message: "User deleted succssfull",
     });
   } catch (error) {
     console.error("Update Error:", error);
