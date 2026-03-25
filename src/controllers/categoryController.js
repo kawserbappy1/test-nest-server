@@ -1,5 +1,7 @@
 import Category from "../models/categoryModel.js";
 import { v2 as claudinary } from "cloudinary";
+
+//add category
 export const addCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -43,10 +45,12 @@ export const addCategory = async (req, res) => {
     console.log("An occure an category");
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: error.message,
     });
   }
 };
+
+//get all category
 export const getAllCategory = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -73,11 +77,12 @@ export const getAllCategory = async (req, res) => {
     console.log("An occure to get category");
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: error.message,
     });
   }
 };
 
+// get all category without pagination
 export const getAllCategoryWithoutPagination = async (req, res) => {
   try {
     const categories = await Category.find();
@@ -89,7 +94,46 @@ export const getAllCategoryWithoutPagination = async (req, res) => {
     console.log("An occure to get category");
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: error.message,
+    });
+  }
+};
+
+// update categoriy
+export const updateCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, isActive } = req.body;
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+    if (name) category.name = name;
+    if (description) category.description = description;
+    if (typeof isActive !== "undefined") category.isActive = isActive;
+    if (req.file) {
+      const oldImageUrl = category.image;
+      if (oldImageUrl) {
+        const public_id = oldImageUrl.split("/").pop().split(".")[0];
+        await claudinary.uploader.destroy(public_id);
+      }
+      const result = await claudinary.uploader.upload(req.file.path);
+      category.image = result.secure_url;
+    }
+    await category.save();
+    res.status(200).json({
+      success: true,
+      message: "Category updated successfully",
+      data: category,
+    });
+  } catch (error) {
+    console.log("An occure to update category");
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

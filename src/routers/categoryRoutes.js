@@ -5,6 +5,7 @@ import {
   addCategory,
   getAllCategory,
   getAllCategoryWithoutPagination,
+  updateCategory,
 } from "../controllers/categoryController.js";
 const categoryRoute = express.Router();
 
@@ -21,6 +22,14 @@ categoryRoute.get(
   protect,
   adminOnly,
   getAllCategoryWithoutPagination,
+);
+
+categoryRoute.patch(
+  "/update-category/:id",
+  upload.single("image"),
+  protect,
+  adminOnly,
+  updateCategory,
 );
 
 export default categoryRoute;
