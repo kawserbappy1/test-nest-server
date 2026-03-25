@@ -77,3 +77,19 @@ export const getAllCategory = async (req, res) => {
     });
   }
 };
+
+export const getAllCategoryWithoutPagination = async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.status(200).json({
+      success: true,
+      categories,
+    });
+  } catch (error) {
+    console.log("An occure to get category");
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};

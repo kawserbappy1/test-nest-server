@@ -4,6 +4,7 @@ import { adminOnly, protect } from "../middleware/authMiddleware.js";
 import {
   addCategory,
   getAllCategory,
+  getAllCategoryWithoutPagination,
 } from "../controllers/categoryController.js";
 const categoryRoute = express.Router();
 
@@ -15,5 +16,11 @@ categoryRoute.post(
   addCategory,
 );
 categoryRoute.get("/get-category", protect, adminOnly, getAllCategory);
+categoryRoute.get(
+  "/get-category-without-pagination",
+  protect,
+  adminOnly,
+  getAllCategoryWithoutPagination,
+);
 
 export default categoryRoute;
