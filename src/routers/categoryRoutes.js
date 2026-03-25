@@ -3,6 +3,7 @@ import upload from "../middleware/multer.js";
 import { adminOnly, protect } from "../middleware/authMiddleware.js";
 import {
   addCategory,
+  deleteCategory,
   getAllCategory,
   getAllCategoryWithoutPagination,
   updateCategory,
@@ -30,6 +31,12 @@ categoryRoute.patch(
   protect,
   adminOnly,
   updateCategory,
+);
+categoryRoute.delete(
+  "/delete-category/:id",
+  protect,
+  adminOnly,
+  deleteCategory,
 );
 
 export default categoryRoute;

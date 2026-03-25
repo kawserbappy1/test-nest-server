@@ -137,3 +137,21 @@ export const updateCategory = async (req, res) => {
     });
   }
 };
+
+// delete category
+export const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteCategory = await Category.findByIdAndDelete(id);
+    res.status(201).json({
+      success: true,
+      message: "Category deleted succssfull",
+    });
+  } catch (error) {
+    console.log("This error come from the delete category", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
