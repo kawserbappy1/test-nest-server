@@ -47,3 +47,33 @@ export const addCategory = async (req, res) => {
     });
   }
 };
+export const getAllCategory = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search || "";
+    const query = {
+      name: { $regex: search, $options: "i" },
+    };
+    const total = await Category.countDocuments(query);
+    const categories = await Category.find(query)
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
+      .lean();
+    res.status(200).json({
+      success: true,
+      categories,
+      total,
+      totalPage: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.log("An occure to get category");
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
