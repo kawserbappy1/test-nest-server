@@ -6,6 +6,7 @@ import connectionDB from "./configs/dbConnection.js";
 import cloudinaryConnection from "./configs/cloudinary.js";
 import userRoute from "./routers/userRoutes.js";
 import categoryRoute from "./routers/categoryRoutes.js";
+import menuRouter from "./routers/menuRoutes.js";
 const app = express();
 
 // middleware
@@ -27,6 +28,8 @@ await cloudinaryConnection();
 app.use("/api/v1/user", userRoute);
 //category route
 app.use("/api/v1/category", categoryRoute);
+//menu route
+app.use("/api/v1/menu", menuRouter);
 
 app.get("/", (req, res) => {
   res.send("This server is running from testy nest server");

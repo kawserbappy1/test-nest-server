@@ -43,8 +43,8 @@ const menuSchema = new mongoose.Schema(
     },
     variants: [
       {
-        name: { type: String, required: true },
-        price: { type: Number, required: true },
+        name: { type: String },
+        price: { type: Number },
       },
     ],
     discount: {
