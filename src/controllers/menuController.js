@@ -92,3 +92,37 @@ export const createMenu = async (req, res) => {
     });
   }
 };
+
+//get all menu
+export const getAllMenu = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search || "";
+    const query = {
+      name: { $regex: search, $options: "i" },
+    };
+    const total = await Menu.countDocuments(query);
+    const menus = await Menu.find(query)
+      .sort({ createdAt: -1 })
+      .populate("category", "name")
+      .limit(limit)
+      .skip(skip)
+      .lean();
+    res.status(200).json({
+      success: true,
+      message: "Menu fetched successfully",
+      menus,
+      totalPage: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.log("An error to create Menu");
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching menu",
+      error: error.message,
+    });
+  }
+};
