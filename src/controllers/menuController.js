@@ -126,3 +126,16 @@ export const getAllMenu = async (req, res) => {
     });
   }
 };
+
+//get all menu for frontend
+export const getAllMenuFrontnd = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log("An error to create Menu");
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching menu",
+      error: error.message,
+    });
+  }
+};

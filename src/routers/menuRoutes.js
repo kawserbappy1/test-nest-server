@@ -1,7 +1,7 @@
 import express from "express";
 import upload from "../middleware/multer.js";
 import { adminOnly, protect } from "../middleware/authMiddleware.js";
-import { createMenu } from "../controllers/menuController.js";
+import { createMenu, getAllMenu } from "../controllers/menuController.js";
 
 const menuRouter = express.Router();
 
@@ -12,4 +12,6 @@ menuRouter.post(
   adminOnly,
   createMenu,
 );
+menuRouter.get("/all-menu-backend", protect, adminOnly, getAllMenu);
+menuRouter.get("/all-menu-frontend", protect, adminOnly);
 export default menuRouter;
